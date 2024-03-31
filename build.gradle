@@ -9,6 +9,28 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    includeimpl.extendsFrom implementation
+}
+
 dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
+    includeimpl 'com.google.code.gson:gson:2.10.1'
+}
+
+task jarWithIncludeImpl(type: Jar) {
+    from configurations.includeimpl.collect {
+        it.isDirectory() ? it : zipTree(it)
+    }
+    from sourceSets.main.output
+    archiveClassifier.set('deps')
+}
+
+task jarWithoutIncludeImpl(type: Jar) {
+    from sourceSets.main.output
+}
+
+artifacts {
+    archives jarWithIncludeImpl
+    archives jarWithoutIncludeImpl
 }
